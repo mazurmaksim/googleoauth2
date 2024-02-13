@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Authentication Page</title>
+</head>
+<body>
+<h1>Authentication Page</h1>
+    <a th:href="${googleUrl}">Login to Google</a>
+<div th:unless="${googleUrl}">
+    Something went wrong: response from google authUrl does not loaded
+</div>
+</body>
+</html>

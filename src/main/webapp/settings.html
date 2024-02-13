@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oauth2 form</title>
+</head>
+<body>
+<h2>Google Oauth2 application settings</h2>
+<form id="dataForm">
+    <label for="clientId">Client ID:</label>
+    <input type="text" id="clientId" name="clientId"><br><br>
+
+    <label for="scope">Scope:</label>
+    <input type="text" id="scope" name="scope"><br><br>
+
+    <label for="redirectUri">Redirect URI:</label>
+    <input type="text" id="redirectUri" name="redirectUri"><br><br>
+
+    <label for="resourceType">Resource Type:</label>
+    <input type="text" id="resourceType" name="resourceType"><br><br>
+
+    <label for="accessType">Access Type:</label>
+    <input type="text" id="accessType" name="accessType"><br><br>
+
+    <label for="clientSecret">Client Secret:</label>
+    <input type="text" id="clientSecret" name="clientSecret"><br><br>
+
+    <label for="includeGrantedScopes">Include Granted Scopes:</label>
+    <input type="checkbox" id="includeGrantedScopes" name="includeGrantedScopes"><br><br>
+
+    <input type="submit" value="Save settings">
+</form>
+
+<script>
+    document.getElementById("dataForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        let formData = {
+            clientId: document.getElementById("clientId").value,
+            scope: document.getElementById("scope").value,
+            redirectUri: document.getElementById("redirectUri").value,
+            resourceType: document.getElementById("resourceType").value,
+            accessType: document.getElementById("accessType").value,
+            clientSecret: document.getElementById("clientSecret").value,
+            includeGrantedScopes: document.getElementById("includeGrantedScopes").checked
+        };
+
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "/saveSettings", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                alert("Settings saved!");
+                document.getElementById("dataForm").reset();
+            }
+        };
+        xhr.send(JSON.stringify(formData));
+    });
+</script>
+</body>
+</html>

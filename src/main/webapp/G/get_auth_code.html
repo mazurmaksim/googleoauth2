@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Auth Code</title>
+</head>
+<body>
+    <h2 id = 'code'></h2>
+</body>
+<script>
+    function getAuthCode() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const element = document.getElementById('code');
+        let code = urlParams.get('code');
+        if (code !== null) {
+            element.innerHTML = code;
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', '/getToken', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({ value: code }));
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    window.location.href = '/success';
+                } else {
+                    console.error('Error while processing code:', xhr.statusText);
+                }
+            };
+        } else {
+            element.innerHTML = 'Something went wrong: response from google code does not loaded';
+        }
+    }
+    document.addEventListener("DOMContentLoaded", getAuthCode);
+</script>
+</html>
