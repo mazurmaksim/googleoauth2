@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Table(name = "app_settings")
 @Entity
-public class Settings {
+public class AppSettings {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long appId;
@@ -14,8 +14,8 @@ public class Settings {
     private String scope;
     @Column(name = "redirect_uri")
     private String redirectUri;
-    @Column(name="resource_type")
-    private String resourceType;
+    @Column(name="response_type")
+    private String responseType;
     @Column(name="access_type")
     private String accessType;
     @Column(name="client_secret")
@@ -55,12 +55,12 @@ public class Settings {
         this.redirectUri = redirectUri;
     }
 
-    public String getResourceType() {
-        return resourceType;
+    public String getResponseType() {
+        return responseType;
     }
 
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
+    public void setResponseType(String responseType) {
+        this.responseType = responseType;
     }
 
     public String getAccessType() {

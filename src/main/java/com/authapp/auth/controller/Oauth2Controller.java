@@ -1,12 +1,11 @@
 package com.authapp.auth.controller;
 
-import com.authapp.auth.entity.Settings;
+import com.authapp.auth.entity.AppSettings;
 import com.authapp.auth.model.ResponseCode;
-import com.authapp.auth.oauth.Autorization;
+import com.authapp.auth.oauth.Authorization;
 import com.authapp.auth.oauth.Token;
 import com.authapp.auth.oauth.TokenHolder;
 import com.authapp.auth.repository.SettingsRepository;
-import com.authapp.auth.settings.Application;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
@@ -16,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import static com.authapp.auth.oauth.Authorization.getAuthCode;
 
 @Controller
 public class Oauth2Controller {
@@ -39,26 +40,22 @@ public class Oauth2Controller {
     }
 
     @PostMapping("/saveSettings")
-    public ResponseEntity<Settings> saveApplicationSettings(@RequestBody Settings settings) {
+    public ResponseEntity<AppSettings> saveApplicationSettings(@RequestBody AppSettings settings) {
         settingsRepository.save(settings);
         return new ResponseEntity<>(settings, HttpStatus.OK);
     }
 
     @GetMapping("/getAuth")
-    public String getAuthCode(Model model) {
-        Settings settings = settingsRepository.getReferenceById(1L);
-        String authUrl = Application.buildAuthUrl(settings);
-        if (authUrl != null) {
-            model.addAttribute("googleUrl", authUrl);
-            return "redirect:" + authUrl;
-        } else {
-            return "redirect:/auth";
-        }
+    public String authCode(Model model) {
+        AppSettings settings = settingsRepository.getReferenceById(1L);
+        String authUrl = getAuthCode(settings).toUriString();
+        model.addAttribute("googleUrl", authUrl);
+        return "redirect:" + authUrl;
     }
 
     @PostMapping("/getToken")
     public ResponseEntity<ResponseCode> getToken(@RequestBody String json) {
-        Settings settings = settingsRepository.getReferenceById(1L);
+        AppSettings settings = settingsRepository.getReferenceById(1L);
         ObjectMapper objectMapper = new ObjectMapper();
         ResponseCode code = null;
         try {
@@ -66,8 +63,7 @@ public class Oauth2Controller {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        String tokenUrl = Application.buildTokenUrl(settings, code.getValue());
-        Token token = Autorization.getToken(tokenUrl);
+        Token token = Authorization.getToken(settings, code.getValue());
         if(token.getAccess_token() !=null) {
             tokenHolder.setToken(token);
             return new ResponseEntity<>(HttpStatus.OK);
