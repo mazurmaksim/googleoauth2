@@ -6,6 +6,7 @@ import com.authapp.auth.oauth.Authorization;
 import com.authapp.auth.oauth.Token;
 import com.authapp.auth.oauth.TokenHolder;
 import com.authapp.auth.repository.SettingsRepository;
+import com.authapp.auth.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
@@ -17,16 +18,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import static com.authapp.auth.oauth.Authorization.getAuthCode;
+import static com.authapp.auth.oauth.Authorization.refreshToken;
 
 @Controller
 public class Oauth2Controller {
 
     final SettingsRepository settingsRepository;
     final TokenHolder tokenHolder;
+    final UserRepository userRepository;
 
-    public Oauth2Controller(SettingsRepository settingsRepository, TokenHolder tokenHolder) {
+    public Oauth2Controller(SettingsRepository settingsRepository, TokenHolder tokenHolder, UserRepository userRepository) {
         this.settingsRepository = settingsRepository;
         this.tokenHolder = tokenHolder;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/")
@@ -56,6 +60,11 @@ public class Oauth2Controller {
     @PostMapping("/getToken")
     public ResponseEntity<ResponseCode> getToken(@RequestBody String json) {
         AppSettings settings = settingsRepository.getReferenceById(1L);
+        if (settings.getAppId() == null) {
+            ResponseCode responseCode = new ResponseCode();
+            responseCode.setValue("No setting for this app");
+            return new ResponseEntity<>(responseCode, HttpStatus.OK);
+        }
         ObjectMapper objectMapper = new ObjectMapper();
         ResponseCode code = null;
         try {
@@ -64,11 +73,11 @@ public class Oauth2Controller {
             throw new RuntimeException(e);
         }
         Token token = Authorization.getToken(settings, code.getValue());
-        if(token.getAccess_token() !=null) {
-            tokenHolder.setToken(token);
-            return new ResponseEntity<>(HttpStatus.OK);
+        if (token.getAccess_token() == null) {
+            token = refreshToken(token, settings);
         }
-        else return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        tokenHolder.setToken(token);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/success")

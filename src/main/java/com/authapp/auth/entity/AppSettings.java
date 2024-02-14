@@ -10,7 +10,7 @@ public class AppSettings {
     private Long appId;
     @Column(name = "client_id")
     private String clientId;
-    @Column(name="scope")
+    @Column(name="scope", length = 10000)
     private String scope;
     @Column(name = "redirect_uri")
     private String redirectUri;
