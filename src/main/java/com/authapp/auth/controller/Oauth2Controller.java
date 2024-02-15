@@ -1,7 +1,9 @@
 package com.authapp.auth.controller;
 
 import com.authapp.auth.entity.AppSettings;
+import com.authapp.auth.entity.User;
 import com.authapp.auth.model.ResponseCode;
+import com.authapp.auth.model.user.Person;
 import com.authapp.auth.oauth.Authorization;
 import com.authapp.auth.oauth.Token;
 import com.authapp.auth.oauth.TokenHolder;
@@ -77,6 +79,15 @@ public class Oauth2Controller {
             token = refreshToken(token, settings);
         }
         tokenHolder.setToken(token);
+        Person googlePerson = Authorization.getUserPersonalInfo(token);
+        User user = userRepository.findUserByEmail(googlePerson.getEmailAddresses().get(0).getValue());
+        if(user == null) {
+            user = new User();
+            user.setGoogleId(googlePerson.getEmailAddresses().get(0).getMetadata().getSource().getId());
+            user.setType(googlePerson.getEmailAddresses().get(0).getMetadata().getSource().getType());
+            user.setEmail(googlePerson.getEmailAddresses().get(0).getValue());
+            userRepository.save(user);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
