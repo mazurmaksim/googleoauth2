@@ -11,6 +11,7 @@ import com.authapp.auth.repository.SettingsRepository;
 import com.authapp.auth.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -53,10 +54,14 @@ public class Oauth2Controller {
 
     @GetMapping("/getAuth")
     public String authCode(Model model) {
-        AppSettings settings = settingsRepository.getReferenceById(1L);
-        String authUrl = getAuthCode(settings).toUriString();
-        model.addAttribute("googleUrl", authUrl);
-        return "redirect:" + authUrl;
+        try {
+            AppSettings settings = settingsRepository.getReferenceById(1L);
+            String authUrl = getAuthCode(settings).toUriString();
+            model.addAttribute("googleUrl", authUrl);
+            return "redirect:" + authUrl;
+        } catch (EntityNotFoundException e) {
+            return "/conferror";
+        }
     }
 
     @PostMapping("/getToken")
@@ -104,17 +109,16 @@ public class Oauth2Controller {
 
     @GetMapping("/success")
     public String successedUser(Model model) {
-        if(tokenHolder.getToken() !=null) {
+        if (tokenHolder.getToken() != null) {
             model.addAttribute("token", tokenHolder.getToken().getAccess_token());
             return "/success.html";
-        }
-        else {
+        } else {
             return "redirect:index.html";
         }
     }
 
     @GetMapping("/revokeToken")
-    public String logout(){
+    public String logout() {
         return "/index.html";
     }
 }
