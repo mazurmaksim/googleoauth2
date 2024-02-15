@@ -37,7 +37,7 @@ public class Oauth2Controller {
 
     @GetMapping("/")
     public String index() {
-        return "index.html";
+        return "/index.html";
     }
 
     @GetMapping(value = "/settings")
@@ -86,7 +86,7 @@ public class Oauth2Controller {
                 .getMetadata()
                 .getSource()
                 .getId();
-        User user = userRepository.findUserByEmail(googleId);
+        User user = userRepository.findUserByGoogleId(googleId);
         if (user == null) {
             user = new User();
             user.setGoogleId(googleId);
@@ -103,8 +103,18 @@ public class Oauth2Controller {
     }
 
     @GetMapping("/success")
-    public ResponseEntity<Token> successedUser(Model model) {
-        model.addAttribute("token", tokenHolder.getToken().getAccess_token());
-        return new ResponseEntity<>(tokenHolder.getToken(), HttpStatus.OK);
+    public String successedUser(Model model) {
+        if(tokenHolder.getToken() !=null) {
+            model.addAttribute("token", tokenHolder.getToken().getAccess_token());
+            return "/success.html";
+        }
+        else {
+            return "redirect:index.html";
+        }
+    }
+
+    @GetMapping("/revokeToken")
+    public String logout(){
+        return "/index.html";
     }
 }

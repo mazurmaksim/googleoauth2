@@ -87,4 +87,22 @@ public class Authorization {
         );
         return response.getBody();
     }
+
+    public static void revokeToken(Token token) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(PERSONAL_INFO_URL);
+        builder.queryParam("token", token.getAccess_token());
+
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        HttpEntity<String> response = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                entity,
+                String.class
+        );
+        System.out.println(response);
+    }
 }

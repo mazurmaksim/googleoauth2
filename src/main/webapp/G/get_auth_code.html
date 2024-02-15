@@ -13,7 +13,7 @@
         const element = document.getElementById('code');
         let code = urlParams.get('code');
         if (code !== null) {
-            element.innerHTML = code;
+            // element.innerHTML = code;
             let xhr = new XMLHttpRequest();
             xhr.open('POST', '/getToken', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
