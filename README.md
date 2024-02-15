@@ -1,6 +1,6 @@
 
-### Setting.html
-# Oauth2 Form
+# Setting.html
+### Oauth2 Form
 
 This HTML document represents a form for configuring Google OAuth2 application settings.
 
@@ -29,6 +29,20 @@ This HTML document represents a form for configuring Google OAuth2 application s
 
 This form allows users to configure OAuth2 settings for their Google application.
 
+### Fetch Data from Google 
+To fetch data you need add these permissions to the http://localhost:8080/settings.
+scope:   https://www.googleapis.com/auth/contacts
+         https://www.googleapis.com/auth/contacts.readonly
+         https://www.googleapis.com/auth/directory.readonly
+         https://www.googleapis.com/auth/user.addresses.read
+         https://www.googleapis.com/auth/user.birthday.read
+         https://www.googleapis.com/auth/user.emails.read
+         https://www.googleapis.com/auth/user.gender.read 
+         https://www.googleapis.com/auth/user.organization.read
+         https://www.googleapis.com/auth/user.phonenumbers.read
+         https://www.googleapis.com/auth/userinfo.email
+         https://www.googleapis.com/auth/userinfo.profile
+And those scope add to the Google app admin panel.
 
 ### Controller Description
 
