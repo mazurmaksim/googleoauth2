@@ -2,7 +2,6 @@ package com.authapp.auth.oauth;
 
 import com.authapp.auth.entity.AppSettings;
 import com.authapp.auth.model.user.Person;
-import com.authapp.auth.repository.UserRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

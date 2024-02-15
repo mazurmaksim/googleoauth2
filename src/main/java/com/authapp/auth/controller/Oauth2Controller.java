@@ -80,11 +80,22 @@ public class Oauth2Controller {
         }
         tokenHolder.setToken(token);
         Person googlePerson = Authorization.getUserPersonalInfo(token);
-        User user = userRepository.findUserByEmail(googlePerson.getEmailAddresses().get(0).getValue());
-        if(user == null) {
+        String googleId = googlePerson
+                .getEmailAddresses()
+                .get(0)
+                .getMetadata()
+                .getSource()
+                .getId();
+        User user = userRepository.findUserByEmail(googleId);
+        if (user == null) {
             user = new User();
-            user.setGoogleId(googlePerson.getEmailAddresses().get(0).getMetadata().getSource().getId());
-            user.setType(googlePerson.getEmailAddresses().get(0).getMetadata().getSource().getType());
+            user.setGoogleId(googleId);
+            user.setType(googlePerson
+                    .getEmailAddresses()
+                    .get(0)
+                    .getMetadata()
+                    .getSource()
+                    .getType());
             user.setEmail(googlePerson.getEmailAddresses().get(0).getValue());
             userRepository.save(user);
         }
