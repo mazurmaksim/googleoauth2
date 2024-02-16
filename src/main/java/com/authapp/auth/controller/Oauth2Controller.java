@@ -6,7 +6,7 @@ import com.authapp.auth.model.ResponseCode;
 import com.authapp.auth.model.user.Person;
 import com.authapp.auth.oauth.Authorization;
 import com.authapp.auth.oauth.Token;
-import com.authapp.auth.oauth.TokenHolder;
+import com.authapp.auth.holder.TokenHolder;
 import com.authapp.auth.repository.SettingsRepository;
 import com.authapp.auth.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -110,7 +110,7 @@ public class Oauth2Controller {
     @GetMapping("/success")
     public String successedUser(Model model) {
         if (tokenHolder.getToken() != null) {
-            model.addAttribute("token", tokenHolder.getToken().getAccess_token());
+            model.addAttribute("token", userRepository.findUserByEmail("formoneyout@gmail.com").getEmail());
             return "/success.html";
         } else {
             return "redirect:index.html";
@@ -118,7 +118,12 @@ public class Oauth2Controller {
     }
 
     @GetMapping("/revokeToken")
-    public String logout() {
-        return "/index.html";
+    public String logout(Model model) {
+        Token token = tokenHolder.getToken();
+        if (token.getAccess_token() !=null) {
+            Authorization.revokeToken(token);
+            return "/index";
+        }
+        return "/errorMessage";
     }
 }

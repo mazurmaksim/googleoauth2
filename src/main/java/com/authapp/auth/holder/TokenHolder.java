@@ -1,5 +1,6 @@
-package com.authapp.auth.oauth;
+package com.authapp.auth.holder;
 
+import com.authapp.auth.oauth.Token;
 import org.springframework.stereotype.Component;
 
 @Component
